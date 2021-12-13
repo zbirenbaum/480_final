@@ -1,0 +1,4 @@
+importing library :10.8s
+importing data, preprocessing, and making embedding: 19.27s
+fitting SVM model : 41'23"
+evaluate: 17'9"
