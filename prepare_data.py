@@ -32,12 +32,13 @@ class Tweet():
         texts = []
         targets = []
         raw_texts = []
-        self.check_maxLen(nlp, list(df['Text']))
+        # self.check_maxLen(nlp, list(df['Text']))
 
         for ind in df.index:
             if ind > 0 and df['Text'][ind]:
-                s = self.sentence_embedding(
-                    nlp, make_txt(df['Text'][ind]), self.maxLen)
+                # s = self.sentence_embedding(
+                #     nlp, make_txt(df['Text'][ind]), self.maxLen)
+                s = self.sentence_embedding(nlp, make_txt(df['Text'][ind]))
                 if s:
                     texts.append(np.array(s))
                     targets.append(df['Target'][ind])
@@ -57,43 +58,43 @@ class Tweet():
         """
         return nlp(token).vector
 
-    def sentence_embedding(self, nlp, sentence, maxLen):
-        if not sentence:
-            return None
-
-        sentence_embed = []
-        for token in nlp(sentence):
-            if np.fabs(nlp.vocab[token.text].vector).sum() > 0:
-                sentence_embed.append(self.word_embedding(nlp, token.text))
-        sentence_embed = [j for i in sentence_embed
-                          for j in i]
-        for i in range(maxLen*300-len(sentence_embed)):
-            sentence_embed.append(0)
-
-        # print(type(sentence_embed))
-        # print(len(sentence_embed))
-        return sentence_embed
-
-    # def sentence_embedding(self, nlp, sentence):
-    #     """Generate a sentence embedding for a given sentence by finding the mean of each
-    #     scalar component of the word embedding, should have same size as a word embedding.
-
-    #     Args:
-    #         sentence (string): e.g. "I think tomorrow is going to be fun"
-
-    #     Returns:
-    #         list(): a list with size 300 (same as output of word_embedding())
-    #     """
+    # def sentence_embedding(self, nlp, sentence, maxLen):
     #     if not sentence:
     #         return None
+
     #     sentence_embed = []
     #     for token in nlp(sentence):
     #         if np.fabs(nlp.vocab[token.text].vector).sum() > 0:
     #             sentence_embed.append(self.word_embedding(nlp, token.text))
-    #     if sentence_embed:
-    #         return self.embedding_mean(sentence_embed)
+    #     sentence_embed = [j for i in sentence_embed
+    #                       for j in i]
+    #     for i in range(maxLen*300-len(sentence_embed)):
+    #         sentence_embed.append(0)
 
-    #     return None
+    #     # print(type(sentence_embed))
+    #     # print(len(sentence_embed))
+    #     return sentence_embed
+
+    def sentence_embedding(self, nlp, sentence):
+        """Generate a sentence embedding for a given sentence by finding the mean of each
+        scalar component of the word embedding, should have same size as a word embedding.
+
+        Args:
+            sentence (string): e.g. "I think tomorrow is going to be fun"
+
+        Returns:
+            list(): a list with size 300 (same as output of word_embedding())
+        """
+        if not sentence:
+            return None
+        sentence_embed = []
+        for token in nlp(sentence):
+            if np.fabs(nlp.vocab[token.text].vector).sum() > 0:
+                sentence_embed.append(self.word_embedding(nlp, token.text))
+        if sentence_embed:
+            return self.embedding_mean(sentence_embed)
+
+        return None
 
     def embedding_mean(self, sentence_embed):
         """Finding the mean of a list of word embeddings
